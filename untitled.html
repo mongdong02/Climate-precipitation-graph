@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>과학탐구실험 - 빅데이터 분석</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+    }
+    h1 {
+      text-align: center;
+      font-weight: bold;
+    }
+    .input-section, .form-section, .chart-section {
+      margin-top: 20px;
+    }
+    .hidden {
+      display: none;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+    canvas {
+      margin-top: 20px;
+      width: 100% !important;
+      height: auto !important;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <h1>과학탐구실험 - 빅데이터 분석</h1>
+
+  <div class="input-section">
+    <p>그릴 그래프를 선택해주세요:</p>
+    <select id="graphType" onchange="showForm()">
+      <option value="">-- 선택 --</option>
+      <option value="temp">기온 변화 그래프</option>
+      <option value="rain">강수량 변화 그래프</option>
+    </select>
+  </div>
+
+  <div id="form" class="form-section hidden">
+    <label>1931-1960 평균값: <input type="number" id="val1"></label>
+    <label>1961-1990 평균값: <input type="number" id="val2"></label>
+    <label>1991-2020 평균값: <input type="number" id="val3"></label>
+    <button onclick="drawChart()">완료</button>
+  </div>
+
+  <div class="chart-section hidden" id="chartSection">
+    <canvas id="myChart"></canvas>
+    <button onclick="saveChart()">그래프 이미지 저장</button>
+  </div>
+
+  <script>
+    let chart;
+
+    function showForm() {
+      document.getElementById('form').classList.remove('hidden');
+      document.getElementById('chartSection').classList.add('hidden');
+    }
+
+    function drawChart() {
+      const type = document.getElementById('graphType').value;
+      const label = type === 'temp' ? '기온 (℃)' : '강수량 (mm)';
+
+      const val1 = parseFloat(document.getElementById('val1').value);
+      const val2 = parseFloat(document.getElementById('val2').value);
+      const val3 = parseFloat(document.getElementById('val3').value);
+
+      const ctx = document.getElementById('myChart').getContext('2d');
+
+      if (chart) chart.destroy();
+
+      chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: ['1931-1960', '1961-1990', '1991-2020'],
+          datasets: [{
+            label: label,
+            data: [val1, val2, val3],
+            borderColor: 'blue',
+            backgroundColor: 'lightblue',
+            fill: false,
+            tension: 0.3
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: false
+            }
+          }
+        }
+      });
+
+      document.getElementById('chartSection').classList.remove('hidden');
+    }
+
+    function saveChart() {
+      const link = document.createElement('a');
+      link.download = 'graph.png';
+      link.href = document.getElementById('myChart').toDataURL();
+      link.click();
+    }
+  </script>
+</body>
+</html>
